@@ -1,0 +1,245 @@
+```mermaid
+erDiagram
+  USERS {
+    bigint id PK
+    string name
+    string email UNIQUE
+    string password
+    timestamp email_verified_at
+  }
+
+  DEPARTMENTS {
+    bigint id PK
+    string name
+    string code UNIQUE
+    text description
+    bigint manager_id FK -> USERS.id
+    decimal budget_limit
+    boolean is_active
+    bigint erp_department_id
+  }
+
+  CATEGORIES {
+    bigint id PK
+    string name
+    string code UNIQUE
+    text description
+    bigint parent_id FK -> CATEGORIES.id
+    boolean is_active
+    bigint erp_category_id
+  }
+
+  SUPPLIERS {
+    bigint id PK
+    string name
+    string code UNIQUE
+    string tax_id UNIQUE
+    string contact_name
+    string contact_email
+    string contact_phone
+    json address
+    int payment_terms
+    string currency
+    decimal rating
+    string status
+    bigint erp_supplier_id
+  }
+
+  PRODUCTS {
+    bigint id PK
+    string sku UNIQUE
+    string name
+    text description
+    bigint category_id FK -> CATEGORIES.id
+    bigint supplier_id FK -> SUPPLIERS.id
+    decimal unit_price
+    string currency
+    string unit_of_measure
+    int min_stock
+    int max_stock
+    int current_stock
+    int lead_time
+    boolean is_active
+    bigint erp_product_id
+  }
+
+  PURCHASE_REQUESTS {
+    bigint id PK
+    string request_number UNIQUE
+    bigint user_id FK -> USERS.id
+    bigint department_id FK -> DEPARTMENTS.id
+    date request_date
+    date required_date
+    string priority
+    string status
+    decimal total_amount
+    string currency
+    text justification
+    text notes
+    bigint approved_by FK -> USERS.id
+    timestamp approved_at
+    bigint rejected_by FK -> USERS.id
+    timestamp rejected_at
+    text rejection_reason
+    bigint erp_request_id
+  }
+
+  PURCHASE_REQUEST_ITEMS {
+    bigint id PK
+    bigint purchase_request_id FK -> PURCHASE_REQUESTS.id
+    bigint product_id FK -> PRODUCTS.id
+    int quantity
+    decimal unit_price
+    decimal total_price
+    text description
+    text specifications
+    date required_date
+    string status
+  }
+
+  PURCHASE_ORDERS {
+    bigint id PK
+    string order_number UNIQUE
+    bigint purchase_request_id FK -> PURCHASE_REQUESTS.id
+    bigint supplier_id FK -> SUPPLIERS.id
+    date order_date
+    date expected_delivery
+    date actual_delivery
+    string status
+    decimal subtotal
+    decimal tax_amount
+    decimal discount_amount
+    decimal shipping_cost
+    decimal total_amount
+    string currency
+    int payment_terms
+    json shipping_address
+    json billing_address
+    text notes
+    bigint erp_order_id
+  }
+
+  PURCHASE_ORDER_ITEMS {
+    bigint id PK
+    bigint purchase_order_id FK -> PURCHASE_ORDERS.id
+    bigint purchase_request_item_id FK -> PURCHASE_REQUEST_ITEMS.id
+    bigint product_id FK -> PRODUCTS.id
+    int quantity
+    decimal unit_price
+    decimal discount_percentage
+    decimal tax_percentage
+    decimal total_price
+    int received_quantity
+    int pending_quantity
+    string status
+  }
+
+  APPROVALS {
+    bigint id PK
+    string approvable_type
+    bigint approvable_id
+    bigint user_id FK -> USERS.id
+    bigint role_id
+    int approval_level
+    string status
+    text comments
+    timestamp approved_at
+  }
+
+  INVENTORY {
+    bigint id PK
+    bigint product_id FK -> PRODUCTS.id
+    string warehouse_location
+    int quantity_on_hand
+    int quantity_reserved
+    int reorder_point
+    int max_quantity
+    decimal unit_cost
+    timestamp last_updated
+  }
+
+  STOCK_MOVEMENTS {
+    bigint id PK
+    bigint product_id FK -> PRODUCTS.id
+    string movement_type
+    int quantity
+    decimal unit_cost
+    decimal total_cost
+    string reference_type
+    bigint reference_id
+    string warehouse_location
+    text notes
+    bigint user_id FK -> USERS.id
+    timestamp movement_date
+  }
+
+  ERP_INTEGRATION_LOGS {
+    bigint id PK
+    string operation_type
+    string entity_type
+    bigint local_record_id
+    bigint erp_record_id
+    string direction
+    string status
+    json request_data
+    json response_data
+    text error_message
+    int retry_count
+    int max_retries
+    timestamp processed_at
+  }
+
+  ERP_SYNC_STATUS {
+    bigint id PK
+    string entity_type UNIQUE
+    timestamp last_sync_at
+    string sync_status
+    int records_synced
+    int error_count
+    timestamp next_sync_at
+  }
+
+  AUDIT_LOGS {
+    bigint id PK
+    bigint user_id FK -> USERS.id
+    string auditable_type
+    bigint auditable_id
+    string event
+    json old_values
+    json new_values
+    text url
+    string ip_address
+    text user_agent
+    timestamp created_at
+  }
+
+  USERS ||--o{ DEPARTMENTS : "manages (manager_id)"
+  CATEGORIES ||--o{ CATEGORIES : "parent (parent_id)"
+  CATEGORIES ||--o{ PRODUCTS : "category_id"
+  SUPPLIERS ||--o{ PRODUCTS : "supplier_id"
+
+  USERS ||--o{ PURCHASE_REQUESTS : "user_id"
+  DEPARTMENTS ||--o{ PURCHASE_REQUESTS : "department_id"
+  USERS ||--o{ PURCHASE_REQUESTS : "approved_by"
+  USERS ||--o{ PURCHASE_REQUESTS : "rejected_by"
+
+  PURCHASE_REQUESTS ||--o{ PURCHASE_REQUEST_ITEMS : "purchase_request_id"
+  PRODUCTS ||--o{ PURCHASE_REQUEST_ITEMS : "product_id"
+
+  SUPPLIERS ||--o{ PURCHASE_ORDERS : "supplier_id"
+  PURCHASE_REQUESTS ||--o{ PURCHASE_ORDERS : "purchase_request_id"
+  PURCHASE_ORDERS ||--o{ PURCHASE_ORDER_ITEMS : "purchase_order_id"
+  PRODUCTS ||--o{ PURCHASE_ORDER_ITEMS : "product_id"
+  PURCHASE_REQUEST_ITEMS ||--o{ PURCHASE_ORDER_ITEMS : "purchase_request_item_id"
+
+  PRODUCTS ||--o{ INVENTORY : "product_id"
+  PRODUCTS ||--o{ STOCK_MOVEMENTS : "product_id"
+  USERS ||--o{ STOCK_MOVEMENTS : "user_id"
+
+  USERS ||--o{ AUDIT_LOGS : "user_id"
+
+  APPROVALS }o..o{ PURCHASE_REQUESTS : "approvable(*)"
+  APPROVALS }o..o{ PURCHASE_ORDERS : "approvable(*)"
+  AUDIT_LOGS }o..o{ PURCHASE_REQUESTS : "auditable(*)"
+  AUDIT_LOGS }o..o{ PURCHASE_ORDERS : "auditable(*)"
+```
