@@ -160,7 +160,7 @@ CREATE TABLE departments (
 );
 ```
 
-#### Tabla: suppliers
+#### Tabla: suppliers  //proveedores
 ```sql
 CREATE TABLE suppliers (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -241,7 +241,7 @@ CREATE TABLE categories (
 
 ### 3. Proceso de Compras
 
-#### Tabla: purchase_requests
+#### Tabla: purchase_requests //solicitudes de compra
 ```sql
 CREATE TABLE purchase_requests (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -279,7 +279,7 @@ CREATE TABLE purchase_requests (
 );
 ```
 
-#### Tabla: purchase_request_items
+#### Tabla: purchase_request_items //items de las solicitudes de compra
 ```sql
 CREATE TABLE purchase_request_items (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -304,7 +304,7 @@ CREATE TABLE purchase_request_items (
 );
 ```
 
-#### Tabla: purchase_orders
+#### Tabla: purchase_orders //ordenes de compra
 ```sql
 CREATE TABLE purchase_orders (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -341,7 +341,7 @@ CREATE TABLE purchase_orders (
 );
 ```
 
-#### Tabla: purchase_order_items
+#### Tabla: purchase_order_items //items de las ordenes de compra
 ```sql
 CREATE TABLE purchase_order_items (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -372,7 +372,7 @@ CREATE TABLE purchase_order_items (
 
 ### 4. Sistema de Aprobaciones
 
-#### Tabla: approvals
+#### Tabla: approvals //aprobaciones
 ```sql
 CREATE TABLE approvals (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -400,7 +400,7 @@ CREATE TABLE approvals (
 
 ### 5. Inventario
 
-#### Tabla: inventory
+#### Tabla: inventory //inventario
 ```sql
 CREATE TABLE inventory (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -425,7 +425,7 @@ CREATE TABLE inventory (
 );
 ```
 
-#### Tabla: stock_movements
+#### Tabla: stock_movements //movimientos de stock
 ```sql
 CREATE TABLE stock_movements (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -456,7 +456,7 @@ CREATE TABLE stock_movements (
 
 ### 6. Integración ERP
 
-#### Tabla: erp_integration_logs
+#### Tabla: erp_integration_logs //logs de integración ERP
 ```sql
 CREATE TABLE erp_integration_logs (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
